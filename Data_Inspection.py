@@ -32,7 +32,7 @@ class DataInspection:
         else:
             median_val = np.nan
         # 替换Valuation ($B)列中小于等于0或大于140或为空的值为中位数
-        self.data['Valuation ($B)'] = self.data['Valuation ($B)'].apply(lambda x: median_val if pd.isna(x) or x <= 0 or x > 140 else x)
+        self.data['Valuation ($B)'] = self.data['Valuation ($B)'].apply(lambda x: median_val if pd.isna(x) or x <= 0 or x > 80 else x)
 
     def basic_information(self):
         # 初始化一个空的列表来存储统计信息
@@ -100,7 +100,7 @@ class DataInspection:
             self.select1()
         if choose1 == '5':
             data_analysis = MoreDataAnalysis(self)
-            data_analysis.regression()
+            data_analysis.select0()
             self.select1()
         if choose1 == '6':
             print('Looking for text data in your dataset…')
