@@ -7,20 +7,78 @@ class MoreDataAnalysis:
     def __init__(self, data_inspection):
         self.data_inspection = data_inspection
 
-    def regression(self):
+    def select0(self):
+        print('For regression, following are the variables available')
+        print('Variable' + '            ' + 'Type')
+        print('1. Valuation ($B)' + '   ' + 'Ratio')
+        print('2. Country' + '           ' + 'Nominal')
+        print('3. REGION' + '           ' + 'Nominal')
+        print('4. NUM' + '              ' + 'Interval')
+        while True:
+            num1 = input('Enter a variable（from 2 to 4: ')
+            if num1 == '2':
+                variable1 = 'Country'
+                break
+            elif num1 == '3':
+                variable1 = 'REGION'
+                break
+            elif num1 == '4':
+                variable1 = 'NUM'
+                break
+            else:
+                print('Invalid input')
+
+        while True:
+            num2 = input('Enter a continuous (interval/ratio) variable(but not NUM): ')
+            if num2 == '1':
+                variable2 = 'Valuation ($B)'
+                break
+            else:
+                print('Invalid input')
+
+        print('Performing regression over the selected variables…')
+        self.regression(variable1, variable2)
+
+    def regression(self, variable1, variable2):
         data = self.data_inspection.data
-        print('Regression has only two variables: Valuation and NUM')
-        x = data['Valuation ($B)']
-        y = data['NUM']
+        print(f'Performing regression with {variable1} and {variable2}')
+
+        if variable1 == 'Country':
+            x = data[variable1].astype('category').cat.codes
+        elif variable1 == 'REGION':
+            x = data[variable1].astype('category').cat.codes
+        elif variable1 == 'NUM':
+            x = data[variable1]
+        else:
+            print("Invalid categorical variable selected")
+            return
+
+        if variable2 == 'Valuation ($B)':
+            y = data[variable2].astype(float)
+        else:
+            print("Invalid continuous variable selected")
+            return
+
+        if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(y.dtype, np.number):
+            print("One of the variables is not numeric")
+            return
+
+        # 使用有效的数据点进行线性回归
         slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+
         plt.scatter(x, y, label='Data points')
         plt.plot(x, intercept + slope * x, 'r', label='Fitted line')
+        plt.xlabel(variable1)
+        plt.ylabel(variable2)
+        plt.title(f'Regression: {variable1} vs {variable2}')
+        plt.legend()
         plt.show()
-        print('Slope:' + str(slope))
-        print('Intercept:' + str(intercept))
-        print('R-squared:' + str(r_value))
-        print('P-value:' + str(p_value))
-        print('Standard Deviation:' + str(std_err))
+
+        print('Slope:', slope)
+        print('Intercept:', intercept)
+        print('R-squared:', r_value ** 2)  # R-squared is the square of r_value
+        print('P-value:', p_value)
+        print('Standard Deviation:', std_err)
 
     def select4(self):
         print('For t-test, following are the variables available')
